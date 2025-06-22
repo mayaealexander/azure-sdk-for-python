@@ -21,7 +21,7 @@ jobs:
         run: |
           git fetch --no-tags --prune --depth=2 origin main
           CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
-          UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
+          UPDATED_JSON=$(jq -R -s -c 'split("\n")[:-1]' <<< "$CHANGED")
           echo "updated_files=$UPDATED_JSON" >> $GITHUB_OUTPUT
 
 
@@ -31,4 +31,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.SDK_REPO_PAT }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --argjson files '${{ steps.changes.outputs.updated_files }}' '{event_type:"sdk-updated", client_payload:{updated_files: $files}}')"
+            -d "$(jq -n --argjson files "${UPDATED_JSON}" '{event_type:"sdk-updated", client_payload:{updated_files: $files}}')"
