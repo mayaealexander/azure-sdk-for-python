@@ -22,7 +22,9 @@ jobs:
           git fetch --no-tags --prune --depth=2 origin main
           CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
           UPDATED_JSON=$(echo "$CHANGED" | jq -R . | jq -s .)
-          echo "updated_files=$UPDATED_JSON" >> $GITHUB_OUTPUT
+          echo "updated_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$UPDATED_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
           
       - name: Trigger Watcher repo workflow
