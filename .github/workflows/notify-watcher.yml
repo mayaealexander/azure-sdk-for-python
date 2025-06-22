@@ -21,10 +21,8 @@ jobs:
         run: |
           git fetch --no-tags --prune --depth=2 origin main
           CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
-          UPDATED_JSON=$(jq -R -s -c 'split("\n")[:-1]' <<< "$CHANGED")
-          echo "UPDATED_JSON<<EOF" >> $GITHUB_ENV
-          echo "$UPDATED_JSON" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
+          echo "UPDATED_JSON=$UPDATED_JSON" >> $GITHUB_ENV
 
       - name: Trigger Watcher repo workflow
         run: |
@@ -32,5 +30,5 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.SDK_REPO_PAT }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --argjson files "$UPDATED_JSON" \
-                  '{event_type:"sdk-updated", client_payload:{updated_files: $files}}')"
+            -d "{\"event_type\": \"sdk-updated\", \"client_payload\": {\"updated_files\": $UPDATED_JSON}}"
+
