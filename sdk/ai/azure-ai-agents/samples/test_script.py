@@ -7,6 +7,3 @@ def test_add():
 def test_add2():
   assert sample(16,4) == 20
 
-
-
-
