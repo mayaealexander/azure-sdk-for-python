@@ -5,5 +5,5 @@ def test_add():
   assert sample_add(2,3) == 5
 
 def test_add2():
-  assert sample(16,1) == 17
+  assert sample(6,1) == 7
 
