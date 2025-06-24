@@ -6,4 +6,5 @@ def test_add():
 
 def test_add2():
   assert sample(6, 1) == 7
-  
+
+
