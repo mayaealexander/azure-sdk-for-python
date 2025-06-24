@@ -26,6 +26,7 @@ jobs:
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
   notify:
     needs: skip-check
@@ -36,7 +37,7 @@ jobs:
         id: changes
         run: |
           git fetch --no-tags --prune --depth=2 origin main
-          CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
+          CHANGED=$(git diff --name-only FETCH_HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
           UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
           echo "UPDATED_JSON=$UPDATED_JSON" >> $GITHUB_ENV
 
