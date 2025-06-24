@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
+
       - name: Check commit message
         id: check
         run: |
@@ -36,27 +36,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # required to ensure HEAD^ is accessible
 
       - name: Get updated .py files in samples/
         id: changes
         run: |
-          echo "HEAD: $(git rev-parse HEAD)"
-          echo "HEAD^: $(git rev-parse HEAD^ || echo 'No parent commit')"
-
-          if git rev-parse HEAD^ >/dev/null 2>&1; then
-            CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
-          else
-            CHANGED=$(git diff --name-only HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
-          fi
-
-          if [ -z "$CHANGED" ]; then
-            UPDATED_JSON="[]"
-          else
-            UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
-          fi
-
-          echo "UPDATED_JSON=$UPDATED_JSON"
+          git fetch --no-tags --prune --depth=0 origin main
+          CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
+          UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
           echo "UPDATED_JSON=$UPDATED_JSON" >> $GITHUB_ENV
 
       - name: Trigger Watcher repo workflow
