@@ -12,7 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       skip: ${{ steps.check.outputs.skip }}
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
       - name: Check commit message
         id: check
         run: |
@@ -27,14 +31,7 @@ jobs:
     needs: skip-check
     if: needs.skip-check.outputs.skip == 'false'
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 #get full history so git diff works
-          ref: main #ensures origin/main is available
-          
       - name: Get updated .py files in samples/
         id: changes
         run: |
