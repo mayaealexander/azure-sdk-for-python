@@ -4,9 +4,28 @@ on:
   push:
     paths:
       - 'sdk/ai/azure-ai-agents/samples/**'
+    branches:
+      - main
 
 jobs:
+  skip-check:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check commit message
+        id: check
+        run: |
+          MESSAGE=$(git log -1 --pretty=format:'%s')
+          echo "Commit message: $MESSAGE"
+          if [[ "$MESSAGE" == *"[skip watcher]"* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+
   notify:
+    needs: skip-check
+    if: needs.skip-check.outputs.skip == 'false'
     runs-on: ubuntu-latest
     
     steps:
