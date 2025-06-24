@@ -36,7 +36,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0  
 
       - name: Get updated .py files in samples/
         id: changes
@@ -49,8 +49,6 @@ jobs:
           else
             CHANGED=$(git diff --name-only HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
           fi
-
-          echo "CHANGED=$CHANGED"
 
           if [ -z "$CHANGED" ]; then
             UPDATED_JSON="[]"
@@ -68,4 +66,3 @@ jobs:
             -H "Authorization: token ${{ secrets.SDK_REPO_PAT }}" \
             -H "Content-Type: application/json" \
             -d "{\"event_type\": \"sdk-updated\", \"client_payload\": {\"updated_files\": $UPDATED_JSON}}"
-
