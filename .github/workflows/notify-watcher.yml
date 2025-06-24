@@ -41,7 +41,7 @@ jobs:
       - name: Get updated .py files in samples/
         id: changes
         run: |
-          git fetch --no-tags --prune --depth=0 origin main
+          git fetch --no-tags --prune origin main
           CHANGED=$(git diff --name-only HEAD^ HEAD | grep 'sdk/ai/azure-ai-agents/samples/' | grep '\.py$' || true)
           UPDATED_JSON=$(echo "$CHANGED" | jq -R -s -c 'split("\n")[:-1]')
           echo "UPDATED_JSON=$UPDATED_JSON" >> $GITHUB_ENV
