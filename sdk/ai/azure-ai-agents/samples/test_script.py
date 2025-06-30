@@ -5,4 +5,4 @@ def test_add():
   assert sample_add(2, 3) == 5 
 
 def test_add2():
-  assert sample_add(8, 2) == 10
+  assert sample_add(1, -2) == 1
