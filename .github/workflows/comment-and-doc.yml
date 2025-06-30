@@ -11,7 +11,7 @@ jobs:
 
   comment-samples:
   #skip if this commit was made by the AI Comment Assistant
-    if: github.event.head_commit.author.name != 'AI Comment Assistant'
+    if: ! ${{ contains(github.event.head_commit.message, '[skip comment]') }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,10 +22,8 @@ jobs:
       - name: Checkout SDK Repo
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
           fetch-depth: 0
-          token: ${{ secrets.SDK_REPO_PAT }}
-          path: python-sdk
+      
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,13 +35,11 @@ jobs:
 
       - name: Build list of changed samples
         run: |
-          git diff --name-only origin/main | grep 'samples/' | grep '\.py$' > /tmp/updated_files.txt
-
-      - name: List changed sample files
-        run: cat /tmp/updated_files.txt
+          git diff --name-only ${{ github.sha }} ${{ github.sha }}^ -- 'sdk/ai/azure-ai-agents/samples/**/*.py' > /tmp/updated_files.txt
+          echo "Files to comment:" && cat /tmp/updated_files.txt
 
       - name: Run AI commenting script
-        run: python generate_comments_AOAI.py /tmp/updated_files.txt python-sdk
+        run: python tools/generate_comments_AOAI.py /tmp/updated_files.txt .
         env:
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
@@ -54,6 +50,6 @@ jobs:
           cd python-sdk
           git config user.name "AI Comment Assistant"
           git config user.email "mayaealexander@users.noreply.github.com"
-          git add .
+          git add sdk/ai/azure-ai-agents/samples/
           git diff --cached --quiet || git commit -m "Add inline comments via AI assistant [skip comment]"
-          git push origin main
+          git push origin HEAD:main
