@@ -13,7 +13,35 @@ def call_openai_to_comment(code: str, filename: str) -> str:
         "Content-Type": "application/json",
         "api-key": API_KEY
     }
-    prompt = f"""Add helpful inline comments to the following Python file, especially explaining what each part of the code is doing and why it might matter. Do not remove any code. File: {filename}\n\n{code}"""
+    prompt = f"""
+You are a code-commenting assistant
+
+Your task:
+1. Insert brief, helpful `#`-style comments inline with the Python code below.  
+   – One short sentence per logical block or tricky line is enough.  
+2. Return only the updated source file – no markdown fences, no prose before or after.
+
+Preparing for future docs
+If you have extra explanations (title, summary, step-by-step, links, etc.)  
+that belong in documentation rather than the code file, emit them as
+single-line metadata above the code using this syntax:
+# DOC_TITLE: <title>
+# DOC_SUMMARY: <summary>
+# DOC_STEPS: <step-by-step>
+# DOC_LINKS: <links>
+
+Anything starting with `# DOC_` will be stripped from the file later and routed
+into a docs builder.
+
+Hard constraints:
+1. Output must be valid Python – no markdown fences (```), no HTML, no extra
+  wrappers of any kind; 
+  If you include ``` anywhere, or wrap the code in any markup, the answer is wrong.
+
+### BEGIN FILE
+{code}
+### END FILE
+"""
 
     # Standard chat format payload. max_tokens=1000 can be increased if files are long
     payload = {
