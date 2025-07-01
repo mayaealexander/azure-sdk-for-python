@@ -55,7 +55,6 @@ jobs:
           branch: "bot/auto-comment-${{ github.sha }}"
           title: 'Add inline comments via AI assistant'
           body: 'This PR was created by the AI Comment Assistant.'
-          labels: 'bot'
           commit-message: 'Add inline comments via AI assistant [skip comment]'
           delete-branch: true
 
