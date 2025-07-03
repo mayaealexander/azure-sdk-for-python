@@ -22,16 +22,18 @@ Your task:
 2. Return only the updated source file – no markdown fences, no prose before or after.
 
 Preparing for future docs
-If you have extra explanations (title, summary, step-by-step, links, etc.)  
+If you have extra explanations (title, summary, step-by-step, notes, links, etc.)  
 that belong in documentation rather than the code file, emit them as
 single-line metadata above the code using this syntax:
 # DOC_TITLE: <title>
 # DOC_SUMMARY: <summary>
 # DOC_STEPS: <step-by-step>
+# DOC_NOTES: <notes>
 # DOC_LINKS: <links>
 
-Anything starting with `# DOC_` will be stripped from the file later and routed
-into a docs builder.
+Only inline #-comments stay with the code; anything starting with # DOC_ will be routed into the Markdown doc later
+
+Use ### Heading text for major sections you want surfaced in docs; keep one-hash comments for short inline notes.
 
 Hard constraints:
 1. Output must be valid Python – no markdown fences (```), no HTML, no extra
